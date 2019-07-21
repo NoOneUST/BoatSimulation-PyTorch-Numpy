@@ -17,16 +17,21 @@ Example Outputs:
 ![image](https://github.com/NoOneUST/BoatSimulation/blob/master/images/4.png)
 
 SubmergedVolume:  0.003660416
+
 Weight of Displaced Water:  3.649434752
+
 Weight of Boat:  3.679330063124074
 
 Done 
+
 Loss=  -0.8125205026778612 % 
+
 Offset =  -74.16163232646556
 
 Buoyancy Torque under  30  degrees:  0.35160645453244144  N * M
 
 COM:  [153, 116, 161]
+
 COB:  [153, 123, 178]
 
 It can recover
