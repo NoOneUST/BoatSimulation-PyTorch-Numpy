@@ -48,7 +48,7 @@ It's not permitted for students in HKUST's QEA class to copy any part of this co
 
     COB:  [401, 628, 414]
 
-    It can recover<br><br>
+    It can recover
 
 ####    `Output 2:`
     SubmergedVolume:  0.00024688300000000004
