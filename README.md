@@ -27,23 +27,40 @@ Example Outputs:
 
 
 SubmergedVolume:  0.00025004700000000004
+
 Weight of Displaced Water:  0.24929685900000004
+
 Weight of Boat:  0.24594468644351491
+
 Done 
+
 Loss=  5.541808033442471 % 
+
 Offset =  319
+
 Buoyancy Torque under  120  degrees:  0.09380837391524804  N * M
+
 COM:  [401, 401, 590]
+
 COB:  [401, 628, 414]
+
 It can recover
 
 
 SubmergedVolume:  0.00024688300000000004
+
 Weight of Displaced Water:  0.24614235100000004
+
 Weight of Boat:  0.24594468644351491
+
 Done 
+
 Loss=  0.32677883032509514 % 
+
 Offset =  126
+
 Buoyancy Torque under  140  degrees:  -0.1347145832032468  N * M
+
 COM:  [401, 401, 590]
+
 COB:  [401, 625, 410]
