@@ -65,6 +65,6 @@ It's not permitted for students in HKUST's QEA class to copy any part of this co
 
     Buoyancy Torque under  140  degrees:  -0.1347145832032468  N * M
 
-    COM:  [401, 401, 590]
+    COM:  [401, 401, 590] 
 
     COB:  [401, 625, 410]
