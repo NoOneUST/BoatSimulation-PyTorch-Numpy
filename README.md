@@ -3,7 +3,7 @@
 
 -----------------------------------------------------
 
-#### '`Discrete3DHull.py`' is the main file. <br>
+####        '`Discrete3DHull.py`' is the main file. <br>
     
 You can use it to initialize a 3D boat with an arbitary function and to add ballasts and masts to your boat. 
     
@@ -11,9 +11,9 @@ After this, you will be able to calculate the center of mass and center of buoya
     
 In the end, the program will tell you whether your boat is stable and give you some instinct results.<br>
 
-#### '`plotAlgebraic3DHull.py`' is a program file with which you can visualize any algebric boat you want.<br>
+####        '`plotAlgebraic3DHull.py`' is a program file with which you can visualize any algebric boat you want.<br>
 
-#### `Enjoy` this program! <br>
+####        `Enjoy` this program! <br>
 
 I know very clearly that this program is still far from maturation. If you have any questions or find any bugs, please feedback to me via email `lwangcg@connect.ust.hk`.<br><br>
 
