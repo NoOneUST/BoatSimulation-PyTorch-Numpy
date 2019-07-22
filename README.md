@@ -18,7 +18,7 @@ I know very clearly that this program is still far from maturation. If you have 
 
 ####    `Notice`:
 
-    It's not permitted for students in HKUST's QEA class to copy any part of this code directly before they submit their code, or it will be treated as cheating.<br>
+It's not permitted for students in HKUST's QEA class to copy any part of this code directly before they submit their code, or it will be treated as cheating.<br>
 
 ####    `Example Outputs`:
 
