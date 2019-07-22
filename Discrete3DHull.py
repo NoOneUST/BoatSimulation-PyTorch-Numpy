@@ -3,8 +3,8 @@ from matplotlib import pyplot as plt
 import numpy as np
 # from pathos.multiprocessing import ProcessingPool as Pool
 
-from scipy.optimize import root, fsolve
-from mpl_toolkits.mplot3d import Axes3D
+# from scipy.optimize import root, fsolve
+# from mpl_toolkits.mplot3d import Axes3D
 
 # cores = multiprocessing.cpu_count()
 for loopIter in range(1):
