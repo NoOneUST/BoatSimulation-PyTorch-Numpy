@@ -8,7 +8,6 @@ from mpl_toolkits.mplot3d import Axes3D
 
 # cores = multiprocessing.cpu_count()
 
-# x, y = 6, 2
 D = 0.2  # meter
 L, B = 0.5, 0.5
 
@@ -59,19 +58,14 @@ yArray = np.linspace(-yRange, yRange, yLen)
 xGrid, yGrid = np.meshgrid(xArray, yArray)
 zGrid = D * (np.power(2 * xGrid / L, 4) + np.power(2 * yGrid / B, 2))
 
-# def f(x, y):
-#     return x*x + y*y
-#
-# pool = Pool(cores)
-#
-# pool.map(f, range(5), range(5))
-
 hullMesh = np.zeros((xLen, yLen, zLen))
+
+minZIndexMat = ((np.transpose(zGrid) + zLowerBound) / precision).astype(np.int)
 
 for i in range(xLen):
     for j in range(yLen):
-        minZIndex = int((zGrid[j, i] + zLowerBound) / precision)
-        hullMesh[i, j, minZIndex:maxZIndex] = 1
+        # minZIndex = int((zGrid[j, i] + zLowerBound) / precision)
+        hullMesh[i, j, minZIndexMat[i, j]:maxZIndex] = 1
         # hullMesh[i, j, minZIndex:minZIndex + int(boatThick / precision)] = 1
         # hullMesh[i, j, maxZIndex - int(boatThick / precision):maxZIndex] = 1
 
@@ -86,14 +80,12 @@ def calculCOM(weightMat):
     xCOMPre = np.linspace(1, xLen, xLen).dot(np.sum(weightMat, axis=(2, 1)))
     yCOMPre = np.linspace(1, yLen, yLen).dot(np.sum(weightMat, axis=(0, 2)))
     zCOMPre = np.linspace(1, zLen, zLen).dot(np.sum(weightMat, axis=(1, 0)))
-    xCOM = xCOMPre / M
-    yCOM = yCOMPre / M
-    zCOM = zCOMPre / M
-    return [xCOM, yCOM, zCOM]
+    xCOM, yCOM, zCOM = [xCOMPre, yCOMPre, zCOMPre] / M
+    return np.array([xCOM, yCOM, zCOM]).astype(np.int)
 
 
 def addBallast(weightMat, ballast1):
-    xCOM, yCOM, zCOM = map(int, calculCOM(weightMat))
+    xCOM, yCOM, zCOM = calculCOM(weightMat)
     shape = ballast1.meshShape
     weightMat[int(xCOM - shape[0] / 2):int(xCOM + shape[0] / 2 + 1),
               int(yCOM - shape[1] / 2):int(yCOM + shape[1] / 2 + 1),
@@ -105,7 +97,7 @@ hullMesh = hullMeshDensity * hullMesh
 
 hullWeight = caculWeight(hullMesh)
 
-xCOM, yCOM, zCOM = list(map(int, calculCOM(hullMesh)))
+xCOM, yCOM, zCOM = calculCOM(hullMesh)
 print([xCOM, yCOM, zCOM])
 
 hullMesh = addBallast(hullMesh, ballast1)
@@ -114,33 +106,33 @@ hullMesh = addBallast(hullMesh, ballast1)
 def addMast(weightMat):
     DiaMeter = 9.5e-3  # meter
     Radius = DiaMeter / 2  # meter
-    RadiusMesh = Radius / precision
+    RadiusMesh = int(Radius / precision)
     Length = 0.5  # meter
     Weight = 96.7e-3  # kg
     Volume = np.pi * Radius * Radius * Length
     Density = Weight / Volume
     DensityMesh = Density * np.power(precision, 3)
 
-    xCOM, yCOM, zCOM = map(int, calculCOM(weightMat))
+    xCOM, yCOM, zCOM = calculCOM(weightMat)
 
-    for i in np.linspace(
-            xCOM - RadiusMesh,
-            xCOM + RadiusMesh,
-            int(2 * RadiusMesh + 1)):
-        for j in np.linspace(
-                yCOM - RadiusMesh,
-                yCOM + RadiusMesh,
-                int(2 * RadiusMesh + 1)):
-            if (i - xCOM) * (i - xCOM) + (j - yCOM) * \
-                    (j - yCOM) < RadiusMesh * RadiusMesh:
-                weightMat[int(i), int(j), int(zLowerBound / precision):int((zLowerBound + Length) / precision)] = DensityMesh
+    iArray = np.linspace(- RadiusMesh, RadiusMesh, 2 *
+                         RadiusMesh + 1).astype(np.int)
+    jRadius = np.sqrt(RadiusMesh * RadiusMesh - iArray * iArray).astype(np.int)
+    for i in range(iArray.shape[0]):
+        weightMat[iArray[i] +
+                  xCOM, yCOM -
+                  jRadius[i]:yCOM +
+                  jRadius[i], int(zLowerBound /
+                                  precision):int((zLowerBound +
+                                                  Length) /
+                                                 precision)] = DensityMesh
 
     return weightMat
 
 
 hullMesh = addMast(hullMesh)
 
-xCOM, yCOM, zCOM = list(map(int, calculCOM(hullMesh)))
+xCOM, yCOM, zCOM = calculCOM(hullMesh)
 print([xCOM, yCOM, zCOM], '\n')
 
 hullWeight = caculWeight(hullMesh)
@@ -153,36 +145,33 @@ def fliTrans(mat):
     return np.flipud(mat.transpose())
 
 
-# plt.figure(4)
-# plt.matshow(fliTrans(hullMesh[MidIndexX, :, :]))
-# plt.show()
-
-def calculDisplacementVolumeMesh(hullMesh, waterAngle, waterOffset, isFinal):
+def calculDisplacementVolumeMesh(
+        hullMesh,
+        waterAngle,
+        waterOffset,
+        isFinal,
+        needInverse):
     noWaterMesh = np.ones(
         [hullMesh.shape[0], hullMesh.shape[1], hullMesh.shape[2]])
     waterLineMesh = np.zeros(
         [hullMesh.shape[0], hullMesh.shape[1], hullMesh.shape[2]])
 
-    if (waterAngle >= 0 and waterAngle < np.pi /
-            2) or (waterAngle >= 1.5 * np.pi and waterAngle < 2 * np.pi):
-        needInverse = 0
-    else:
-        needInverse = 1
-    for i in range(yLen):
-        rightXY = (np.tan(waterAngle) * (i * precision - xRange) +
-                   yRange) / precision + waterOffset
-        rightX1Y = (np.tan(waterAngle) * ((i - 1) * precision -
-                                          xRange) + yRange) / precision + waterOffset
+    rightXYArray = ((np.tan(waterAngle) *
+                     (np.arange(yLen) *
+                      precision -
+                      xRange) +
+                     yRange) /
+                    precision +
+                    waterOffset).astype(np.int)
 
-        for j in range(zLen):
-            if np.logical_xor(j < rightXY, needInverse):
-                noWaterMesh[:, i, j] = 0
-            if np.logical_xor(
-                    j - 1 < rightXY,
-                    j < rightXY) or np.logical_xor(
-                    j < rightX1Y,
-                    j < rightXY):
-                waterLineMesh[:, i, j] = 1
+    if needInverse:
+        for i in range(yLen):
+            rightXY = rightXYArray[i]
+            noWaterMesh[:, i, rightXY:] = 0
+    else:
+        for i in range(yLen):
+            rightXY = rightXYArray[i]
+            noWaterMesh[:, i, :rightXY] = 0
 
     unSubmergedMesh = np.logical_and(noWaterMesh, hullMesh) * hullMesh
     DisplacedWaterWeight = np.sum(
@@ -209,39 +198,31 @@ def calculDisplacementVolumeMesh(hullMesh, waterAngle, waterOffset, isFinal):
         waterLineMesh,
         DisplacedWaterWeight]
 
-# def calLoss(waterOffset):
-#     unSubmergedMesh, SubmergedMesh, waterLineMesh, SubmergedWeight = calculDisplacementVolumeMesh(
-#         hullMesh, waterAngle, waterOffset)
-#     thisLoss = SubmergedWeight - hullWeight
-#     return thisLoss
-#
-# degreeAngle = 30
-#
-# waterAngle = np.deg2rad(degreeAngle)
-# print('root: ', root(calLoss, [58]))
-# #print('fsolve: ', fsolve(calLoss, [55]))
-
 
 def calculBestWaterOffsetMesh(hullMesh, waterAngle, hullWeight):
-    lastLoss = np.sum(hullMesh)
+    lastLoss = - np.sum(hullMesh)
     maxIteration = 5000
     waterOffsetLowerBound = - 2 * zLen
     waterOffsetUpperBound = 3 * zLen
-    waterOffset = waterOffsetLowerBound
-    lastWaterOffset = waterOffset - 1
-    intersect = (waterOffsetUpperBound - waterOffsetLowerBound) / \
-        (maxIteration - 1)
+    waterOffset = int((waterOffsetLowerBound + waterOffsetUpperBound) / 2)
+
+    if (waterAngle >= 0 and waterAngle < np.pi /
+            2) or (waterAngle >= 1.5 * np.pi and waterAngle < 2 * np.pi):
+        needInverse = 0
+    else:
+        needInverse = 1
+
     for i in range(maxIteration):
         print('Processed: ' + str((i + 1) / maxIteration * 100) +
               '%' + '     Loss: ' + str(lastLoss))
         unSubmergedMesh, SubmergedMesh, waterLineMesh, DisplacedWaterWeight = calculDisplacementVolumeMesh(
-            hullMesh, waterAngle, waterOffset, False)
+            hullMesh, waterAngle, waterOffset, False, needInverse)
         thisLoss = DisplacedWaterWeight - hullWeight
 
-        if (abs(thisLoss) - abs(lastLoss) > 0.001 and waterOffset - lastWaterOffset > 0.01 and (lastLoss <
-                                                                                                0 or thisLoss < 0)) or i >= maxIteration - 1 or abs(thisLoss / hullWeight * 100) < 1:
+        if i >= maxIteration - \
+                1 or abs(thisLoss / hullWeight * 100) < 1 or waterOffsetLowerBound >= waterOffsetUpperBound:
             unSubmergedMesh, SubmergedMesh, waterLineMesh, DisplacedWaterWeight = calculDisplacementVolumeMesh(
-                hullMesh, waterAngle, lastWaterOffset, True)
+                hullMesh, waterAngle, waterOffset, True, needInverse)
             thisLoss = DisplacedWaterWeight - hullWeight
             print(
                 '\nDone \nLoss= ',
@@ -261,56 +242,19 @@ def calculBestWaterOffsetMesh(hullMesh, waterAngle, hullWeight):
                 thisLoss /
                 np.sum(hullMesh)]
         else:
-            if abs(lastLoss - thisLoss) / \
-                    abs(thisLoss) < 0.05 and abs(thisLoss / hullWeight * 100) > 30:
-                waterOffset += intersect * 10
-            elif abs(thisLoss / hullWeight * 100) < 10:
-                waterOffset += intersect * 0.1
+            if thisLoss < 0 and not(needInverse):
+                waterOffsetLowerBound = waterOffset
+                waterOffset = int((waterOffset + waterOffsetUpperBound) / 2)
+            elif thisLoss < 0 and needInverse:
+                waterOffsetUpperBound = waterOffset
+                waterOffset = int((waterOffset + waterOffsetLowerBound) / 2)
+            elif thisLoss > 0 and not(needInverse):
+                waterOffsetUpperBound = waterOffset
+                waterOffset = int((waterOffset + waterOffsetLowerBound) / 2)
             else:
-                waterOffset += intersect
+                waterOffsetLowerBound = waterOffset
+                waterOffset = int((waterOffset + waterOffsetUpperBound) / 2)
             lastLoss = thisLoss
-            lastWaterOffset = waterOffset
-
-    #
-    # for waterOffset in np.linspace(waterOffsetLowerBound, waterOffsetUpperBound, maxIteration):
-    #     print('Processed: ' + str((waterOffset + zLen / 2) / zLen * 100) +
-    #           '%' + '     Loss: ' + str(lastLoss))
-    #     unSubmergedMesh, SubmergedMesh, waterLineMesh, SubmergedWeight = calculDisplacementVolumeMesh(
-    #         hullMesh, waterAngle, waterOffset)
-    #     thisLoss = SubmergedWeight - hullWeight
-    #     # plt.figure(1)
-    #     # plt.matshow(fliTrans(unSubmergedMesh[MidIndexX, :, :]))
-    #     # plt.title('unSubmergedMesh')
-    #     # plt.show()
-    #     # plt.figure(2)
-    #     # plt.matshow(fliTrans(SubmergedMesh[MidIndexX, :, :]))
-    #     # plt.title('noWaterMesh')
-    #     # plt.show()
-    #     if abs(thisLoss) > abs(lastLoss + abs(0.1 * lastLoss)) or (waterOffset + zLen / 2) / zLen > (maxIteration - 1) / maxIteration:
-    #         unSubmergedMesh, SubmergedMesh, waterLineMesh, SubmergedWeight = calculDisplacementVolumeMesh(
-    #             hullMesh, waterAngle, waterOffset - intersect)
-    #         thisLoss = SubmergedWeight - hullWeight
-    #         print('done, Loss= ', thisLoss / hullWeight *100, '%', '   offset = ', waterOffset)
-    #         pass
-    #         return [
-    #             waterOffset,
-    #             unSubmergedMesh,
-    #             SubmergedMesh,
-    #             waterLineMesh,
-    #             thisLoss,
-    #             thisLoss /
-    #             np.sum(hullMesh)]
-    #     else:
-    #         lastLoss = thisLoss
-
-    # plt.figure(1)
-    # plt.matshow(fliTrans(unSubmergedMesh[MidIndexX, :, :]))
-    # plt.title('unSubmergedMesh')
-    # plt.show()
-    # plt.figure(2)
-    # plt.matshow(fliTrans(noWaterMesh[MidIndexX, :, :]))
-    # plt.title('noWaterMesh')
-    # plt.show()
 
 
 degreeAngle = 30  # degree
@@ -319,11 +263,6 @@ waterAngle = np.deg2rad(degreeAngle)
 
 waterOffset, unSubmergedMesh, SubmergedMesh, waterLineMesh, Loss, lossPercent = calculBestWaterOffsetMesh(
     hullMesh, waterAngle, hullWeight)
-
-
-# def calculCOB(SubmergedMesh):
-#     return calculCOM(SubmergedMesh)
-
 
 [xCOB, yCOB, zCOB] = map(int, calculCOM(SubmergedMesh))
 
@@ -349,13 +288,6 @@ print('COB: ', [xCOB, yCOB, zLen - zCOB])
 
 if(buoyancyTorque > 0):
     print('\nIt can recover\n')
-
-# hullMesh = SubmergedMesh
-
-# plt.figure(1)
-# plt.matshow(np.array([[int(0), int(0)], [int(1), int(1)]]))
-# plt.title('test')
-# plt.show()
 
 plt.figure(1)
 # plt.matshow(fliTrans(hullMesh[MidIndexX, :, :]))
