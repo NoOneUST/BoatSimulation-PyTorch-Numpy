@@ -1,6 +1,6 @@
 # BoatSimulation
 An original and useful code for boat simulation
-===
+---
 
 'Discrete3DHull.py' is the main file. You can use it to initialize a 3D boat with an arbitary function and to add ballasts and masts to your boat. After this, you will be able to calculate the center of mass and center of buoyancy of your boat, with which you can obtain its waterline and righting moment. In the end, the program will tell you whether your boat is stable and give you some instinct results.
 
