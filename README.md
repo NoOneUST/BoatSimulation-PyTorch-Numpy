@@ -14,6 +14,10 @@ Enjoy this program!
 I know very clearly that this program is still far from maturation. If you have any questions or find any bugs, please feedback to me via email lwangcg@connect.ust.hk.
 
 
+Notice:
+
+It's not permitted for students in HKUST's QEA class to copy any part of this code directly before they submit their code, or it will be treated as cheating.
+
 Example Outputs:
 
 ![image](https://github.com/NoOneUST/BoatSimulation/blob/master/images/1.png)
