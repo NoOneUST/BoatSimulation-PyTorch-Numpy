@@ -9,15 +9,15 @@ import numpy as np
 # cores = multiprocessing.cpu_count()
 for loopIter in range(1):
     print('This is Loop: ', loopIter)
-    D = 0.3  # meter
-    L, B = 0.5, 0.5
+    D = 0.3 * 0.65  # meter
+    L, B = 0.3, 0.3
 
-    xRange = 0.20 * 2  # meter
-    yRange = 0.20 * 2  # meter
+    xRange = 0.20 * 2 * 0.65  # meter
+    yRange = 0.20 * 2 * 0.65  # meter
     zUpperBound = np.maximum(D * 1.2, 0.7)  # meter
     zLowerBound = D * 0.2
 
-    precision = 0.001  # meter
+    precision = 0.003  # meter
     gravity = 9.8  # m/s^2
     waterDensity = 997  # kg/m^3
     hullDensity = 1.1  # kg/m^3
@@ -30,10 +30,10 @@ for loopIter in range(1):
         return list(map(int, (np.array(axis) + zLowerBound) / precision))
 
     class ballast():
-        weight = 0.14  # kg
+        weight = 0.13  # kg
         axisPosition = np.array([0, 0, 0])  # meter
         meshPosition = axis2MeshPositionZ(axisPosition)
-        axisShape = np.array([0.06, 0.025, 0.025])  # meter
+        axisShape = np.array([0.03*4, 0.025*1.5, 0.025*1.5])  # meter
         meshShape = list(map(int, axisShape / precision))
         meshVolume = meshShape[0] * meshShape[1] * meshShape[2]
         meshDensity = weight / meshVolume
@@ -263,9 +263,7 @@ for loopIter in range(1):
                 thisLoss = (DisplacedWaterWeight - hullWeight) / hullWeight
                 print(
                     '\nDone \nLoss= ',
-                    thisLoss /
-                    hullWeight *
-                    100,
+                    thisLoss * 100,
                     '%',
                     '\nOffset = ',
                     waterOffset)
@@ -276,8 +274,6 @@ for loopIter in range(1):
                     SubmergedMesh,
                     waterLineMesh,
                     thisLoss,
-                    thisLoss /
-                    np.sum(hullMesh),
                     noWaterMesh]
             else:
                 if thisLoss < 0 and not(needInverse):
@@ -298,11 +294,11 @@ for loopIter in range(1):
                         (waterOffset + waterOffsetUpperBound) / 2)
                 lastLoss = thisLoss
 
-    degreeAngle = 140  # degree
+    degreeAngle = 120  # degree
 
     waterAngle = np.deg2rad(degreeAngle)
 
-    waterOffset, unSubmergedMesh, SubmergedMesh, waterLineMesh, Loss, lossPercent, noWaterMesh = calculBestWaterOffsetMesh(
+    waterOffset, unSubmergedMesh, SubmergedMesh, waterLineMesh, Loss, noWaterMesh = calculBestWaterOffsetMesh(
         hullMesh, waterAngle, hullWeight)
 
     HullSubmergedMesh = np.logical_and(noWaterMesh < 0.5, SubmergedMesh)
@@ -332,6 +328,21 @@ for loopIter in range(1):
     if(buoyancyTorque > 0):
         print('\nIt can recover\n')
 
+    # xCOMPre = np.linspace(
+    #     1, xLen, xLen).dot(
+    #     np.sum(
+    #         weightMat, axis=(
+    #             2, 1)))
+    # yCOMPre = np.linspace(
+    #     1, yLen, yLen).dot(
+    #     np.sum(
+    #         weightMat, axis=(
+    #             0, 2)))
+    # zCOMPre = np.linspace(
+    #     1, zLen, zLen).dot(
+    #     np.sum(
+    #         weightMat, axis=(
+    #             1, 0)))
     plt.figure(1)
     # plt.matshow(fliTrans(hullMesh[MidIndexX, :, :]))
     plt.matshow(fliTrans(SubmergedMesh[MidIndexX, :, :] > 0))
@@ -349,10 +360,26 @@ for loopIter in range(1):
     plt.title('xz')
     plt.show()
 
+    zWeightArray = np.sum(hullMesh > 0, axis=(1, 0))
+    xNoZeroIndexArray = np.where(np.sum(hullMesh, axis=(1, 2)) > 0)[0]
+    yNoZeroIndexArray = np.where(np.sum(hullMesh, axis=(2, 0)) > 0)[0]
+
+    def calculMaxZIndexOfBoat(zWeightArray):
+        for i in range(zLen -1):
+            if zWeightArray[i] > zWeightArray[i+1] * 1.1:
+                return i
+
+    boatHeightIndex = calculMaxZIndexOfBoat(zWeightArray)
+
     plt.figure(4)
-    plt.matshow(fliTrans(hullMesh[:, :, MidIndexZ] > 0))
+    plt.matshow(fliTrans(hullMesh[:, :, boatHeightIndex]) > 0)
     plt.title('xy')
     plt.show()
+
+    print('The height of Boat is: ', (calculMaxZIndexOfBoat(zWeightArray) - np.where(zWeightArray > 0)[0][0]) * precision)
+    print('The Length of Boat is: ', (xNoZeroIndexArray[-1] - xNoZeroIndexArray[0]) * precision)
+    print('The Width of Boat is: ', (yNoZeroIndexArray[-1] - yNoZeroIndexArray[0]) * precision)
+
 
     synthesisMap = noWaterMesh + (hullMesh[MidIndexX, :, :] > 0)
     synthesisMap[xCOM - 2:xCOM - 2:, yCOM - 2:yCOM + 2, zCOM - 2:zCOM + 2] += 1
