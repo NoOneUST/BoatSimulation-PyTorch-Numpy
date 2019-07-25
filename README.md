@@ -3,15 +3,13 @@
 
 -----------------------------------------------------
 
-####        '`Discrete3DHull_Pytorch.py`' is the main file. <br>
+####        '`Discrete3DHull_Pytorch.py`' is the pytorch version of the main file running on GPU. <br>
     
 You can use it to initialize a 3D boat with an arbitary function and to add ballasts and masts to your boat. 
     
 After this, you will be able to calculate the center of mass and center of buoyancy of your boat, with which you can obtain its waterline and righting moment. 
     
-In the end, the program will tell you whether your boat is stable and give you some instinct results.
-
-`Note that` this is the pytorch version implementation running on GPU.<br>
+In the end, the program will tell you whether your boat is stable and give you some instinct results.<br>
 
 ####        '`Discrete3DHull_Pytorch.py`' is the numpy version of the main file running on CPU. <br>
 
