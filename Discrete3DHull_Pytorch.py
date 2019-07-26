@@ -50,6 +50,7 @@ for loopIter in range(1):
     MidIndexZ = int(zLowerBound / precision + 1)
 
     maxZIndex = int((D + zLowerBound + boatThick) / precision)
+    maxZIndexNoDeck = int((D + zLowerBound) / precision)
 
     xLen = int(2 * xRange / precision + 1)
     yLen = int(2 * yRange / precision + 1)
@@ -68,13 +69,24 @@ for loopIter in range(1):
          zLowerBound) /
         precision).int()
 
-    zUpperBoundHull = int((D + zLowerBound + boatThick) / precision)
+    # for index in itertools.product(range(xLen), range(yLen)):
+    #     hullMesh[index[0], index[1], minZIndexMat[index[0], index[1]]:min(maxZIndex, minZIndexMat[index[0], index[1]] + boatThickMesh)] = 1
+    #     # if index[0] < MidIndexX:
+    #     #     hullMesh[index[0]:index[0]+boatThickMesh, index[1], min(maxZIndexNoDeck, minZIndexMat[index[0], index[1]])] = 1
+    #     # if index[0] >= MidIndexX:
+    #     #     hullMesh[index[0]-boatThickMesh:index[0], index[1], min(maxZIndexNoDeck, minZIndexMat[index[0], index[1]])] = 1
+    #     # if index[1] < MidIndexY:
+    #     #     hullMesh[index[0], index[1]:index[1]+boatThickMesh, min(maxZIndexNoDeck, minZIndexMat[index[0], index[1]])] = 1
+    #     # if index[1] >= MidIndexY:
+    #     #     hullMesh[index[0], index[1]-boatThickMesh:index[1], min(maxZIndexNoDeck, minZIndexMat[index[0], index[1]])] = 1
+    #     # if minZIndexMat[index[0], index[1]] <= maxZIndexNoDeck:
+    #     #     hullMesh[index[0], index[1], maxZIndexNoDeck: maxZIndex] = 1
+    # DeckArea = torch.sum(hullMesh, dim=2) > 0
+    # for index in range(maxZIndexNoDeck, maxZIndex+1):
+    #     hullMesh[:, :, index] = DeckArea
 
     for index in itertools.product(range(xLen), range(yLen)):
-        hullMesh[index[0], index[1], minZIndexMat[index[0], index[1]]:min(maxZIndex, minZIndexMat[index[0], index[1]] + boatThickMesh)] = 1
-        if minZIndexMat[index[0], index[1]] > 0:
-            hullMesh[index[0], index[1], int((D + zLowerBound) / precision): maxZIndex] = 1
-
+        hullMesh[index[0], index[1], minZIndexMat[index[0], index[1]]:maxZIndexNoDeck] = 1
 
     def caculWeight(weightMat):
         return weightMat.sum()
@@ -401,7 +413,7 @@ for loopIter in range(1):
     plt.figure(6)
     ax = plt.subplot(111, projection='3d')
     ax.scatter(PureHullMeshNoDeck[:, 0], PureHullMeshNoDeck[:, 1], PureHullMeshNoDeck[:, 2], c='b')
-    ax.scatter(PureDeckMesh[:, 0], PureDeckMesh[:, 1], PureDeckMesh[:, 2], c='w')
+    # ax.scatter(PureDeckMesh[:, 0], PureDeckMesh[:, 1], PureDeckMesh[:, 2], c='w')
     ax.scatter(PureMastMesh[:, 0], PureMastMesh[:, 1], PureMastMesh[:, 2], c='y')
     ax.set_zlabel('Z')
     ax.set_ylabel('Y')
