@@ -2,9 +2,11 @@ import itertools
 from matplotlib import pyplot as plt
 import numpy as np
 import torch
+from mpl_toolkits.mplot3d import Axes3D
 import os
 os.environ["CUDA_VISIBLE_DEVICES"] = "3"
-# from mpl_toolkits.mplot3d import Axes3D
+
+device = torch.device("cuda")
 
 
 def showMat(Mat):
@@ -29,13 +31,14 @@ for loopIter in range(1):
 
     hullMeshDensity = hullDensity * np.power(precision, 3)
     waterMeshDensity = waterDensity * np.power(precision, 3)
+    boatThickMesh = int(boatThick / precision)
 
     class ballast():
         weight = 0.12  # kg
-        axisPosition = torch.tensor([0, 0, 0]).cuda()  # meter
+        axisPosition = torch.tensor([0, 0, 0], device=device)  # meter
         meshPosition = ((axisPosition + zLowerBound) / precision).int()
         axisShape = torch.tensor(
-            [0.03 * 2, 0.025 * 3, 0.025 * 1.5]).cuda()  # meter
+            [0.03 * 2, 0.025 * 3, 0.025 * 1.5], device=device)  # meter
         meshShape = (axisShape / precision).int()
         meshVolume = meshShape[0] * meshShape[1] * meshShape[2]
         meshDensity = weight / meshVolume.float()
@@ -46,30 +49,32 @@ for loopIter in range(1):
     MidIndexY = int(yRange / precision + 1)
     MidIndexZ = int(zLowerBound / precision + 1)
 
-    maxZIndex = int((D + zLowerBound) / precision)
+    maxZIndex = int((D + zLowerBound + boatThick) / precision)
 
     xLen = int(2 * xRange / precision + 1)
     yLen = int(2 * yRange / precision + 1)
     zLen = int((zLowerBound + zUpperBound) / precision + 1)
 
-    xArray = torch.linspace(-xRange, xRange, xLen).cuda()
-    yArray = torch.linspace(-yRange, yRange, yLen).cuda()
+    xArray = torch.linspace(-xRange, xRange, xLen, device=device)
+    yArray = torch.linspace(-yRange, yRange, yLen, device=device)
 
     xGrid, yGrid = torch.meshgrid([xArray, yArray])
     zGrid = D * (torch.pow(2 * xGrid / L, 4) + torch.pow(2 * yGrid / B, 2))
 
-    hullMesh = torch.zeros((xLen, yLen, zLen)).cuda()
+    hullMesh = torch.zeros((xLen, yLen, zLen), device=device)
 
     minZIndexMat = (
         (torch.t(zGrid) +
          zLowerBound) /
         precision).int()
 
+    zUpperBoundHull = int((D + zLowerBound + boatThick) / precision)
+
     for index in itertools.product(range(xLen), range(yLen)):
-        hullMesh[index[0], index[1],
-                 minZIndexMat[index[0], index[1]]:maxZIndex] = 1
-        # hullMesh[i, j, minZIndex:minZIndex + int(boatThick / precision)] = 1
-        # hullMesh[i, j, maxZIndex - int(boatThick / precision):maxZIndex] = 1
+        hullMesh[index[0], index[1], minZIndexMat[index[0], index[1]]:min(maxZIndex, minZIndexMat[index[0], index[1]] + boatThickMesh)] = 1
+        if minZIndexMat[index[0], index[1]] > 0:
+            hullMesh[index[0], index[1], int((D + zLowerBound) / precision): maxZIndex] = 1
+
 
     def caculWeight(weightMat):
         return weightMat.sum()
@@ -77,27 +82,41 @@ for loopIter in range(1):
     def calculCOM(weightMat):
         M = caculWeight(weightMat)
         xCOMPre = torch.dot(torch.linspace(
-            1, xLen, xLen).cuda(),
+            1, xLen, xLen, device=device),
             torch.sum(
                 weightMat, dim=(
                     2, 1)))
         yCOMPre = torch.dot(torch.linspace(
-            1, yLen, yLen).cuda(),
+            1, yLen, yLen, device=device),
             torch.sum(
                 weightMat, dim=(
                     0, 2)))
         zCOMPre = torch.dot(torch.linspace(
-            1, zLen, zLen).cuda(),
+            1, zLen, zLen, device=device),
             torch.sum(
                 weightMat, dim=(
                     1, 0)))
-        xCOM, yCOM, zCOM = map(lambda x: x/M, [xCOMPre, yCOMPre, zCOMPre])
-        return torch.tensor([xCOM, yCOM, zCOM]).cuda().int()
+        xCOM, yCOM, zCOM = map(lambda x: x / M, [xCOMPre, yCOMPre, zCOMPre])
+        return torch.tensor([xCOM, yCOM, zCOM], device=device).int()
 
     def addBallast(weightMat, ballast1):
         xCOM, yCOM, zCOM = calculCOM(weightMat)
         shape = ballast1.meshShape
-        weightMat[int(xCOM -shape[0] /2):int(xCOM +shape[0] /2 +1), int(yCOM -shape[1] /2):int(yCOM +shape[1] /2 +1), int(MidIndexZ+ballast1.meshShape[2]):int(MidIndexZ + 2*ballast1.meshShape[2]) +1] += ballast1.meshDensity
+        weightMat[int(xCOM -
+                      shape[0] /
+                      2):int(xCOM +
+                             shape[0] /
+                             2 +
+                             1), int(yCOM -
+                                     shape[1] /
+                                     2):int(yCOM +
+                                            shape[1] /
+                                            2 +
+                                            1), int(MidIndexZ +
+                                                    ballast1.meshShape[2]):int(MidIndexZ +
+                                                                               2 *
+                                                                               ballast1.meshShape[2]) +
+                  1] += ballast1.meshDensity
         return weightMat
 
     hullMesh = hullMeshDensity * hullMesh
@@ -109,7 +128,15 @@ for loopIter in range(1):
 
     print('Weight Before Ballast:', caculWeight(hullMesh).item())
 
+    PureHullMeshNoDeck = torch.zeros(hullMesh.size())
+    PureHullMeshNoDeck[:, :, :int((D + zLowerBound) / precision)] = hullMesh[:, :, :int((D + zLowerBound) / precision)]
+
+    PureDeckMesh = torch.zeros(hullMesh.size())
+    PureDeckMesh[:, :, int((D + zLowerBound) / precision):] = hullMesh[:, :, int((D + zLowerBound) / precision):]
+
     hullMesh = addBallast(hullMesh, ballast1)
+
+    PureHullMeshWithDeckAndBallast = hullMesh + 0
 
     print('Weight After Ballast: ', caculWeight(hullMesh).item())
 
@@ -126,7 +153,7 @@ for loopIter in range(1):
         xCOM, yCOM, zCOM = calculCOM(weightMat)
 
         iArray = torch.linspace(- RadiusMesh, RadiusMesh, 2 *
-                                RadiusMesh + 1).cuda()
+                                RadiusMesh + 1, device=device)
         jRadius = torch.sqrt(
             np.power(RadiusMesh, 2) -
             (iArray ** 2)).long()
@@ -142,6 +169,8 @@ for loopIter in range(1):
         return weightMat
 
     hullMesh = addMast(hullMesh)
+
+    PureMastMesh = hullMesh - PureHullMeshWithDeckAndBallast
 
     print('Weight After Mast: ', caculWeight(hullMesh).item())
 
@@ -163,18 +192,26 @@ for loopIter in range(1):
             isFinal,
             needInverse):
         noWaterMesh = torch.ones(
-            hullMesh.shape[0], hullMesh.shape[1], hullMesh.shape[2]).cuda()
+            hullMesh.shape[0],
+            hullMesh.shape[1],
+            hullMesh.shape[2],
+            device=device)
         waterLineMesh = torch.zeros(
-            hullMesh.shape[0], hullMesh.shape[1], hullMesh.shape[2]).cuda()
+            hullMesh.shape[0],
+            hullMesh.shape[1],
+            hullMesh.shape[2],
+            device=device)
 
         rightXYArray = ((np.tan(waterAngle) *
-                         (torch.arange(yLen).cuda().float() *
+                         (torch.arange(yLen, device=device).float() *
                           precision -
                           xRange) +
                          yRange) /
                         precision +
                         waterOffset).int()
-        rightXYArray = torch.max(rightXYArray, torch.zeros(yLen).cuda().int())
+        rightXYArray = torch.max(
+            rightXYArray, torch.zeros(
+                yLen, device=device).int())
 
         if needInverse:
             for i in range(yLen):
@@ -186,9 +223,12 @@ for loopIter in range(1):
         hullArea = (hullMesh > 0).int()
         waterArea = (~ noWaterMesh.byte() > 0).int()
         unSubmergedMesh = (noWaterMesh.int() & hullArea).float() * hullMesh
-        DisplacedWaterWeight = torch.sum(waterArea & hullArea).float() * waterMeshDensity
-        DisplacementVolume = torch.sum(waterArea & hullArea).float() * np.power(precision, 3)
-        SubmergedVolume = torch.sum(waterArea & hullArea).float() * np.power(precision, 3)
+        DisplacedWaterWeight = torch.sum(
+            waterArea & hullArea).float() * waterMeshDensity
+        DisplacementVolume = torch.sum(
+            waterArea & hullArea).float() * np.power(precision, 3)
+        SubmergedVolume = torch.sum(
+            waterArea & hullArea).float() * np.power(precision, 3)
         SubmergedMesh = (waterArea & hullArea).float() * hullMesh
 
         if isFinal:
@@ -213,8 +253,8 @@ for loopIter in range(1):
         waterOffsetUpperBound = 3 * zLen
         waterOffset = int((waterOffsetLowerBound + waterOffsetUpperBound) / 2)
 
-        if (waterAngle >= 0 and waterAngle < np.pi / 2) or (waterAngle >=
-                                                               1.5 * np.pi and waterAngle < 2 * np.pi):
+        if (waterAngle >= 0 and waterAngle < np.pi /
+                2) or (waterAngle >= 1.5 * np.pi and waterAngle < 2 * np.pi):
             needInverse = 0
         else:
             needInverse = 1
@@ -288,9 +328,9 @@ for loopIter in range(1):
     FBuoyancy = FGravity = (hullWeight * gravity).item()
 
     buoyancyTorqueVector = np.cross([(yCOB - yCOM).item() * precision,
-                                        (zCOB - zCOM).item() * precision,
-                                        0],
-                                       [-FBuoyancy * np.sin(waterAngle),
+                                     (zCOB - zCOM).item() * precision,
+                                     0],
+                                    [-FBuoyancy * np.sin(waterAngle),
                                         FBuoyancy * np.cos(waterAngle), 0])
 
     buoyancyTorque = buoyancyTorqueVector[2]
@@ -327,7 +367,8 @@ for loopIter in range(1):
     xNoZeroIndexArray = (torch.sum(hullMesh, dim=(1, 2)) > 0).nonzero()
     yNoZeroIndexArray = (torch.sum(hullMesh, dim=(2, 0)) > 0).nonzero()
 
-    boatHeightIndex = ((zWeightArray[:zLen - 2] - 1.1 * zWeightArray[1:zLen - 1]) > 0).nonzero()[-2][0]
+    boatHeightIndex = (
+        (zWeightArray[:zLen - 2] - 1.1 * zWeightArray[1:zLen - 1]) > 0).nonzero()[-2][0]
 
     plt.figure(4)
     plt.matshow((fliTrans(hullMesh[:, :, boatHeightIndex]) > 0).cpu().numpy())
@@ -353,18 +394,18 @@ for loopIter in range(1):
     plt.title('synthesisMap')
     plt.show()
 
-    # fig1 = plt.figure(1)
-    # ax = Axes3D(fig1)
-    #
-    # ax.plot_surface(
-    #     xGrid,
-    #     yGrid,
-    #     zGrid,
-    #     rstride=1,
-    #     cstride=1,
-    #     cmap='rainbow')
-    # # ax.plot_surface(xGrid, yGrid, DPlane, rstride=1, cstride=1, cmap='rainbow')
-    #
-    # plt.show()
+    poolingOpt = torch.nn.AdaptiveAvgPool3d(200)
+    PureHullMeshNoDeck, PureDeckMesh, PureMastMesh = list(map(lambda x:poolingOpt(x.unsqueeze(
+        0)).squeeze().nonzero().cpu().numpy(), [PureHullMeshNoDeck, PureDeckMesh, PureMastMesh]))
+
+    plt.figure(6)
+    ax = plt.subplot(111, projection='3d')
+    ax.scatter(PureHullMeshNoDeck[:, 0], PureHullMeshNoDeck[:, 1], PureHullMeshNoDeck[:, 2], c='b')
+    ax.scatter(PureDeckMesh[:, 0], PureDeckMesh[:, 1], PureDeckMesh[:, 2], c='w')
+    ax.scatter(PureMastMesh[:, 0], PureMastMesh[:, 1], PureMastMesh[:, 2], c='y')
+    ax.set_zlabel('Z')
+    ax.set_ylabel('Y')
+    ax.set_xlabel('X')
+    plt.show()
 
     pass
