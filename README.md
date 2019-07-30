@@ -19,7 +19,7 @@ In the end, the program will tell you whether your boat is stable and give you s
 
 
 ####    `Final Work`:
-![image](https://github.com/NoOneUST/BoatSimulation/blob/master/images/7.png)
+![image](https://github.com/NoOneUST/BoatSimulation/blob/master/images/8.jpg)
 
 
 ####    `Boat Test`:
