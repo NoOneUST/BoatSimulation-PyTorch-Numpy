@@ -17,6 +17,9 @@ In the end, the program will tell you whether your boat is stable and give you s
 
 ####        `Enjoy` this program! <br>
 
+####    `Test`:
+<iframe width="1280" height="720" src="https://www.youtube.com/embed/Vy-NTNG_4-U" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
 I know very clearly that this program is still far from maturation. If you have any questions or find any bugs, please feedback to me via email `lwangcg@connect.ust.hk`.<br><br>
 
 
@@ -24,12 +27,16 @@ I know very clearly that this program is still far from maturation. If you have 
 
 It's not permitted for students in HKUST's QEA class to copy any part of this code directly before they submit their code, or it will be treated as cheating.<br><br>
 
+
 ####    `Example Outputs`:
 
 ![image](https://github.com/NoOneUST/BoatSimulation/blob/master/images/1.png)
 ![image](https://github.com/NoOneUST/BoatSimulation/blob/master/images/2.png)
 ![image](https://github.com/NoOneUST/BoatSimulation/blob/master/images/3.png)
-![image](https://github.com/NoOneUST/BoatSimulation/blob/master/images/4.png)<br>
+![image](https://github.com/NoOneUST/BoatSimulation/blob/master/images/4.png)
+![image](https://github.com/NoOneUST/BoatSimulation/blob/master/images/5.png)
+![image](https://github.com/NoOneUST/BoatSimulation/blob/master/images/6.png)
+![image](https://github.com/NoOneUST/BoatSimulation/blob/master/images/7.png)<br>
 
 ####    `Output 1:`
     SubmergedVolume:  0.00025004700000000004
