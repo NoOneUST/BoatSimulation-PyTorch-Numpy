@@ -17,9 +17,16 @@ In the end, the program will tell you whether your boat is stable and give you s
 
 ####        `Enjoy` this program! <br>
 
-####    `Test`:
+
+####    `Final Work`:
+![image](https://github.com/NoOneUST/BoatSimulation/blob/master/images/7.png)
+
+
+####    `Boat Test`:
 https://youtu.be/Vy-NTNG_4-U
 
+
+####    `Feedback`:
 I know very clearly that this program is still far from maturation. If you have any questions or find any bugs, please feedback to me via email `lwangcg@connect.ust.hk`.<br><br>
 
 
