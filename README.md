@@ -18,7 +18,7 @@ In the end, the program will tell you whether your boat is stable and give you s
 ####        `Enjoy` this program! <br>
 
 ####    `Test`:
-<iframe width="1280" height="720" src="https://www.youtube.com/embed/Vy-NTNG_4-U" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+https://youtu.be/Vy-NTNG_4-U
 
 I know very clearly that this program is still far from maturation. If you have any questions or find any bugs, please feedback to me via email `lwangcg@connect.ust.hk`.<br><br>
 
