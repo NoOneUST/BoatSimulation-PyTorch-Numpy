@@ -441,4 +441,3 @@ for loopIter in range(2):
     torch.cuda.empty_cache()
 
 print('RightMomentList: ', RightMomentList)
-
