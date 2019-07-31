@@ -33,6 +33,8 @@ https://drive.google.com/open?id=1xxnOqMBaFyNcgnLHjJZ1gzvoHRIJBtvC
 All the 3D print source files you need, including solidworks file, STL generating tools written with matlab(This program is modified on other people's work), gcode file that could be printed directly on Ultimaker, are here:
 https://drive.google.com/open?id=1Zk6Com191bygU-sJWlvQdeYMoig3mTV4
 
+You can also find a part of this in /3D print folder due to the space limitation.
+
 ####    `Feedback`:
 I know very clearly that this program is still far from maturation. If you have any questions or find any bugs, please feedback to me via email `lwangcg@connect.ust.hk`.<br><br>
 
