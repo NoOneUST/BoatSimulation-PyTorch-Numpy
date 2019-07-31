@@ -4,6 +4,8 @@
 -----------------------------------------------------
 
 ####        '`Discrete3DHull_Pytorch.py`' is the pytorch version of the main file running on GPU. <br>
+
+Only this version is now still in maintance, make sure to use this as if you have GPU.
     
 You can use it to initialize a 3D boat with an arbitary function and to add ballasts and masts to your boat. 
     
@@ -45,78 +47,76 @@ It's not permitted for students in HKUST's QEA class to copy any part of this co
 ![image](https://github.com/NoOneUST/BoatSimulation/blob/master/images/6.png)
 ![image](https://github.com/NoOneUST/BoatSimulation/blob/master/images/7.png)<br>
 
-####    `Output 1:`
-    This is Loop:  0
-    
-    COM:  237 237 81
-    
-    Weight Before Ballast: 0.00252125458791852
-    Weight After Ballast:  0.9486632347106934
-    Weight After Mast:  1.0147582292556763
-    
-    COM:  237 237 79 
-    
-    Processed: 0.02%     Loss: -1     waterOffsetLowerBound: -1312     waterOffsetUpperBound: 1968
-    Processed: 0.04%     Loss: -1.0     waterOffsetLowerBound: -1312     waterOffsetUpperBound: 328
-    Processed: 0.06%     Loss: 0.9241608381271362     waterOffsetLowerBound: -492     waterOffsetUpperBound: 328
-    Processed: 0.08%     Loss: -0.6471373438835144     waterOffsetLowerBound: -492     waterOffsetUpperBound: -82
-    Processed: 0.1%     Loss: 0.9207621216773987     waterOffsetLowerBound: -287     waterOffsetUpperBound: -82
-    Processed: 0.12%     Loss: 0.19799742102622986     waterOffsetLowerBound: -184     waterOffsetUpperBound: -82
-    Processed: 0.13999999999999999%     Loss: -0.25148385763168335     waterOffsetLowerBound: -184     waterOffsetUpperBound: -133
-    Processed: 0.16%     Loss: -0.03376365080475807     waterOffsetLowerBound: -184     waterOffsetUpperBound: -158
-    Processed: 0.18%     Loss: 0.08185473829507828     waterOffsetLowerBound: -171     waterOffsetUpperBound: -158
-    Processed: 0.2%     Loss: 0.01958693563938141     waterOffsetLowerBound: -164     waterOffsetUpperBound: -158
-    
-    SubmergedVolume:  0.0010105937253683805
-    Weight of Displaced Water:  1.0075619441922754
-    Weight of Boat:  1.0147582292556763
-    
-    Done 
-    
-    Loss=  -0.7091647014021873 % 
-    Offset =  -161
-    Buoyancy Torque under  120  degrees:  -0.0449344621260616  N * M
-    
-    COM:  [237, 237, 577]
-    COB:  [237, 266, 565]
+####    `Output:`
+This is Loop:  0
 
-    The height of Boat is:  0.1067
-    The Length of Boat is:  0.198
-    The Width of Boat is:  0.1782
-    
-    This is Loop:  1
-    
-    COM:  237 237 81
-    
-    Weight Before Ballast: 0.00252125458791852
-    Weight After Ballast:  0.9486632347106934
-    Weight After Mast:  1.0147582292556763
-    
-    COM:  237 237 79 
-    
-    Processed: 0.02%     Loss: -1     waterOffsetLowerBound: -1312     waterOffsetUpperBound: 1968
-    Processed: 0.04%     Loss: -1.0     waterOffsetLowerBound: -1312     waterOffsetUpperBound: 328
-    Processed: 0.06%     Loss: 0.9241608381271362     waterOffsetLowerBound: -492     waterOffsetUpperBound: 328
-    Processed: 0.08%     Loss: -0.9119965434074402     waterOffsetLowerBound: -492     waterOffsetUpperBound: -82
-    Processed: 0.1%     Loss: 0.9241608381271362     waterOffsetLowerBound: -287     waterOffsetUpperBound: -82
-    Processed: 0.12%     Loss: 0.429568886756897     waterOffsetLowerBound: -184     waterOffsetUpperBound: -82
-    Processed: 0.13999999999999999%     Loss: -0.40110132098197937     waterOffsetLowerBound: -184     waterOffsetUpperBound: -133
-    Processed: 0.16%     Loss: -0.012636375613510609     waterOffsetLowerBound: -184     waterOffsetUpperBound: -158
-    Processed: 0.18%     Loss: 0.20884087681770325     waterOffsetLowerBound: -171     waterOffsetUpperBound: -158
-    Processed: 0.2%     Loss: 0.08868617564439774     waterOffsetLowerBound: -164     waterOffsetUpperBound: -158
-    Processed: 0.22%     Loss: 0.037850271910429     waterOffsetLowerBound: -161     waterOffsetUpperBound: -158
-    
-    SubmergedVolume:  0.0010219018440693617
-    Weight of Displaced Water:  1.0188361385371536
-    Weight of Boat:  1.0147582292556763
-    
-    Done 
-    
-    Loss=  0.40186038240790367 % 
-    Offset =  -159
-    Buoyancy Torque under  140  degrees:  -0.08158023033216084  N * M
-    
-    COM:  [237, 237, 577]
-    COB:  [237, 261, 560]
-    
-    RightMomentList:  [-0.0449344621260616, -0.08158023033216084]
+COM:  237 237 81
+
+Weight Before Ballast: 0.00252125458791852
+Weight After Ballast:  1.2640440464019775
+Weight After Mast:  1.3301390409469604
+
+COM:  237 237 76 
+
+Processed: 0.02%     Loss: -1     waterOffsetLowerBound: -1312     waterOffsetUpperBound: 1968
+Processed: 0.04%     Loss: -1.0     waterOffsetLowerBound: -1312     waterOffsetUpperBound: 328
+Processed: 0.06%     Loss: 0.4679352939128876     waterOffsetLowerBound: -492     waterOffsetUpperBound: 328
+Processed: 0.08%     Loss: -0.7308024168014526     waterOffsetLowerBound: -492     waterOffsetUpperBound: -82
+Processed: 0.1%     Loss: 0.4653424322605133     waterOffsetLowerBound: -287     waterOffsetUpperBound: -82
+Processed: 0.12%     Loss: -0.08605213463306427     waterOffsetLowerBound: -287     waterOffsetUpperBound: -184
+Processed: 0.13999999999999999%     Loss: 0.2516588270664215     waterOffsetLowerBound: -235     waterOffsetUpperBound: -184
+Processed: 0.16%     Loss: 0.08304774761199951     waterOffsetLowerBound: -209     waterOffsetUpperBound: -184
+
+SubmergedVolume:  0.001328026526607573
+Weight of Displaced Water:  1.3240424470277503
+Weight of Boat:  1.3301390409469604
+
+Done 
+
+Loss=  -0.4583431873470545 % 
+Offset =  -196
+Buoyancy Torque under  120  degrees:  0.012794669516966006  N * M
+
+COM:  [237, 237, 580]
+COB:  [237, 256, 568]
+
+It can recover
+
+The height of Boat is:  0.1067
+The Length of Boat is:  0.198
+The Width of Boat is:  0.1782
+
+This is Loop:  1
+
+COM:  237 237 81
+
+Weight Before Ballast: 0.00252125458791852
+Weight After Ballast:  1.2640440464019775
+Weight After Mast:  1.3301390409469604
+
+COM:  237 237 76 
+
+Processed: 0.02%     Loss: -1     waterOffsetLowerBound: -1312     waterOffsetUpperBound: 1968
+Processed: 0.04%     Loss: -1.0     waterOffsetLowerBound: -1312     waterOffsetUpperBound: 328
+Processed: 0.06%     Loss: 0.4679352939128876     waterOffsetLowerBound: -492     waterOffsetUpperBound: 328
+Processed: 0.08%     Loss: -0.9328624606132507     waterOffsetLowerBound: -492     waterOffsetUpperBound: -82
+Processed: 0.1%     Loss: 0.4679352939128876     waterOffsetLowerBound: -287     waterOffsetUpperBound: -82
+Processed: 0.12%     Loss: 0.09061288833618164     waterOffsetLowerBound: -184     waterOffsetUpperBound: -82
+Processed: 0.13999999999999999%     Loss: -0.5431023836135864     waterOffsetLowerBound: -184     waterOffsetUpperBound: -133
+Processed: 0.16%     Loss: -0.24674388766288757     waterOffsetLowerBound: -184     waterOffsetUpperBound: -158
+Processed: 0.18%     Loss: -0.07777969539165497     waterOffsetLowerBound: -184     waterOffsetUpperBound: -171
+
+SubmergedVolume:  0.0013352405512705445
+Weight of Displaced Water:  1.331234829616733
+Weight of Boat:  1.3301390409469604
+
+Done 
+
+Loss=  0.0823802431114018 % 
+Offset =  -177
+Buoyancy Torque under  140  degrees:  -0.017293643294573724  N * M
+
+COM:  [237, 237, 580]
+COB:  [237, 252, 564]
+
+RightMomentList:  [0.012794669516966006, -0.017293643294573724]
