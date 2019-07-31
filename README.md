@@ -47,7 +47,6 @@ It's not permitted for students in HKUST's QEA class to copy any part of this co
 ![image](https://github.com/NoOneUST/BoatSimulation/blob/master/images/6.png)
 ![image](https://github.com/NoOneUST/BoatSimulation/blob/master/images/7.png)
 ![image](https://github.com/NoOneUST/BoatSimulation/blob/master/images/12.png)
-![image](https://github.com/NoOneUST/BoatSimulation/blob/master/images/9.png)
 ![image](https://github.com/NoOneUST/BoatSimulation/blob/master/images/10.png)
 ![image](https://github.com/NoOneUST/BoatSimulation/blob/master/images/11.png)
 <br>
