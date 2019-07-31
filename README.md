@@ -25,8 +25,13 @@ In the end, the program will tell you whether your boat is stable and give you s
 
 
 ####    `Boat Test`:
+The boat test video is here:
 https://drive.google.com/open?id=1xxnOqMBaFyNcgnLHjJZ1gzvoHRIJBtvC
 
+
+####    `3D Print`:
+All the 3D print source files you need, including solidworks file, STL generating tools written with matlab(This program is modified on other people's work), gcode file that could be printed directly on Ultimaker, are here:
+https://drive.google.com/open?id=1Zk6Com191bygU-sJWlvQdeYMoig3mTV4
 
 ####    `Feedback`:
 I know very clearly that this program is still far from maturation. If you have any questions or find any bugs, please feedback to me via email `lwangcg@connect.ust.hk`.<br><br>
