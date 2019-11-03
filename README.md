@@ -1,4 +1,4 @@
-# BoatSimulation
+# BoatSimulation with PyTorch and Numpy
 ### An original and useful code for boat simulation
 
 -----------------------------------------------------
